@@ -5,10 +5,44 @@
 #ifndef FLV_DECODE_FLVHEADER_H
 #define FLV_DECODE_FLVHEADER_H
 
-
-class FlvHeader {
-
+#include <stdint-gcc.h>
+enum FlvFileType
+{
+    VIDEO_ONLY = 0x01,
+    AUDIO_ONLY = 0x04,
+    VIDEO_AND_AUDIO = 0x05,
+};
+class FlvHeader
+{
+public:
+    FlvHeader();
+    FlvHeader(FlvFileType type);
+    virtual ~FlvHeader();
+private:
+    char signature_[3];
+    uint8_t version_;
+    uint8_t flags_;
+    uint32_t header_size_;
+public:
+    void set_file_type(FlvFileType type);
+    FlvFileType get_file_type();
 };
 
+/*
 
+class FlvHeader
+{
+    FlvHeader();
+ //   FlvHeader(FlvFileType type);
+    virtual ~FlvHeader();
+private:
+    char signature_[3];
+    uint8_t version_;
+    uint8_t flags_;
+    uint32_t header_size_;
+public:
+  //  void set_file_type(FlvFileType type);
+   // FlvFileType get_file_type();
+};
+*/
 #endif //FLV_DECODE_FLVHEADER_H
