@@ -1,0 +1,21 @@
+//
+// Created by Hank on 2016/3/2.
+//
+
+#include "FlvPackage.h"
+
+FlvPackage::~FlvPackage()
+{
+	
+}
+
+FlvPackage::FlvPackage():previous_packet_size_(0),
+	packet_type_(18),
+	payload_size_{0},
+	time_stamp_lower_{0},
+	time_stamp_upper_(0),
+	stream_id_{0},
+	payload_data_(nullptr)
+{
+
+}
