@@ -1,7 +1,22 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 2.8)
 project(flv_decode)
+SET(CMAKE_BUILD_TYPE Debug)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11  -g -Wall -Wno-unused-variable -pthread -fpermissive")
+else( CMAKE_BUILD_TYPE STREQUAL "Debug" )
+        set(CMAKE_BUILD_TYPE "Release")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11  -O2 -pthread -fopenmp")
+endif( CMAKE_BUILD_TYPE STREQUAL "Debug" )
 
-set(SOURCE_FILES main.cpp protocol/FlvHeader.cpp protocol/FlvHeader.h protocol/FlvPackage.cpp protocol/FlvPackage.h kernel/FlvKernel.h app/FlvBuffer.cpp app/FlvBuffer.h app/FlvLog.cpp app/FlvLog.h FlvDecode.cpp FlvDecode.h kernel/FlvCommonHeaderFile.h)
+set(APP_FUNCTION app/FlvBuffer.cpp app/FlvBuffer.h app/FlvLog.cpp app/FlvLog.h)
+
+set(KERNEL_FUNCTION kernel/FlvKernel.h kernel/FlvCommonHeaderFile.h)
+
+set(PROTOCOL_FUNCTION  protocol/FlvHeader.cpp protocol/FlvHeader.h protocol/FlvPackage.cpp protocol/FlvPackage.h)
+
+set(SOURCE_FILES main.cpp  FlvDecode.cpp FlvDecode.h ${APP_FUNCTION} ${KERNEL_FUNCTION} ${PROTOCOL_FUNCTION})
+
+set(FLV_BINARY_DIR "./objs/")
+set(EXECUTABLE_OUTPUT_PATH ${FLV_BINARY_DIR})
 add_executable(flv_decode ${SOURCE_FILES})
