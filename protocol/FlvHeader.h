@@ -31,7 +31,7 @@ public:
     FlvFileType get_file_type();
 	bool decode_flv_header(const char* header, int header_size);
 
-	static const int32_t get_default_header_size(){return 9;}
+	static  int32_t get_default_header_size(){return 9;}
 };
 
 /*

@@ -24,6 +24,7 @@ private:
 	std::vector<FlvPackage*> flv_package_list_;
 public:
     void decode_flv_file(std::string filename);
+	void decode_flv_from_http(std::string url);
 };
 
 

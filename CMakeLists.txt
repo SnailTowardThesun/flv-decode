@@ -9,7 +9,7 @@ else( CMAKE_BUILD_TYPE STREQUAL "Debug" )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11  -O2 -pthread -fopenmp")
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug" )
 
-set(APP_FUNCTION app/FlvBuffer.cpp app/FlvBuffer.h app/FlvLog.cpp app/FlvLog.h)
+set(APP_FUNCTION app/FlvBuffer.cpp app/FlvBuffer.h app/FlvLog.cpp app/FlvLog.h app/FlvSocket.h app/FlvSocket.cpp)
 
 set(KERNEL_FUNCTION kernel/FlvKernel.h kernel/FlvCommonHeaderFile.h)
 

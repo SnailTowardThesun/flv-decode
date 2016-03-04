@@ -52,3 +52,8 @@ void FlvDecode::decode_flv_file(std::string filename)
 	// close the stream
 	file_stream.close();
 }
+
+void FlvDecode::decode_flv_from_http(std::string url)
+{
+	
+}
