@@ -13,7 +13,7 @@ set(APP_FUNCTION app/FlvBuffer.cpp app/FlvBuffer.h app/FlvLog.cpp app/FlvLog.h a
 
 set(KERNEL_FUNCTION kernel/FlvKernel.h kernel/FlvCommonHeaderFile.h)
 
-set(PROTOCOL_FUNCTION  protocol/FlvHeader.cpp protocol/FlvHeader.h protocol/FlvPackage.cpp protocol/FlvPackage.h)
+set(PROTOCOL_FUNCTION  protocol/FlvHeader.cpp protocol/FlvHeader.h protocol/FlvPackage.cpp protocol/FlvPackage.h protocol/FlvHttp.h protocol/FlvHttp.cpp)
 
 set(SOURCE_FILES main.cpp  FlvDecode.cpp FlvDecode.h ${APP_FUNCTION} ${KERNEL_FUNCTION} ${PROTOCOL_FUNCTION})
 
