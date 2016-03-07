@@ -26,7 +26,7 @@ namespace FlvSocket
 	public:
 		virtual bool  initialize(std::string TargetIpAddr,int32_t localPort) = 0;
 		virtual int32_t send_msg(std::string msg, int32_t msg_size) = 0;
-		virtual void recv_msg(std::string& msg, int32_t& msg_size) = 0;
+		virtual char* recv_msg( int32_t& msg_size) = 0;
 	};
 
 	class FlvTCPSocket:FlvBaseSocket // TCP socket
@@ -43,7 +43,7 @@ namespace FlvSocket
 	public:
 		bool initialize(std::string TargetIpAddr,int32_t TargetPort);
 		int32_t send_msg(std::string msg, int32_t msg_size);
-		void recv_msg(std::string& msg, int32_t& msg_size);
+		char* recv_msg( int32_t& msg_size);
 	};
 
 	class FlvUDPSocket:FlvBaseSocket
@@ -54,7 +54,7 @@ namespace FlvSocket
 	public:
 		bool initialize(std::string TargetIpAddr,int32_t TargetPort);
 		int32_t send_msg(std::string msg, int32_t msg_size);
-		void recv_msg(std::string& msg, int32_t& msg_size);
+		char* recv_msg( int32_t& msg_size);
 
 	};
 };

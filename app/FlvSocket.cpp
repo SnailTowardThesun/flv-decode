@@ -65,21 +65,23 @@ int32_t FlvTCPSocket::send_msg(std::string msg, int32_t msg_size)
 		std::cout<<"the socket has not been created"<<std::endl;
 		return ret;
 	}
+	//const char* test = "GET /live/livestream.flv HTTP/1.1\r\nHost: 192.168.9.237:8080\r\n\r\n";
 	ret = send(socket_,msg.c_str(),msg_size,0);
+	//ret = send(socket_,test,(size_t)strlen(test),0);
 	std::cout<<"the length of message sended is "<<ret<<std::endl;
 	return ret;
 }
 
-void FlvTCPSocket::recv_msg(std::string& msg, int32_t& msg_size)
+char* FlvTCPSocket::recv_msg(int32_t& msg_size)
 {
 	if(socket_  == -1)
 	{
 		std::cout<<"the socket has not been created"<<std::endl;
-		return;
+		return nullptr;
 	}
 	msg_size = recv(socket_,message_,MAX_LENGTH_OF_RECEIVE_MESSAGE,0);
-	msg = message_;
 	std::cout<<"the length of message received is "<<msg_size<<std::endl;
+	return message_;
 }
 
 FlvUDPSocket::FlvUDPSocket()
@@ -102,7 +104,7 @@ int32_t FlvUDPSocket::send_msg(std::string msg, int32_t msg_size)
 	return 0;
 }
 
-void FlvUDPSocket::recv_msg(std::string& msg, int32_t& msg_szie)
+char* FlvUDPSocket::recv_msg(int32_t& msg_szie)
 {
 
 }

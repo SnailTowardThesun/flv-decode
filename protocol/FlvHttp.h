@@ -19,13 +19,21 @@ public:
 	bool initialize(string TargetAddr, int32_t TargetPort);
 private:
 	FlvTCPSocket client_socket_;
+	string host_ip_;
+	string host_port_;
+	char* decoded_buffer_;
+	char* recved_buffer_;
+	char* decoded_current_pos_;
+
+	int32_t data_left_;
 protected:
-	int32_t parse_received_msg(string msg_to_parse, string& msg_result);
+	char* parse_received_msg(char* msg_to_parse, int32_t& msg_size);
+	int32_t parse_url(string url_to_parse, string& targetAddr, string& targetPort, string& requestContent);
+	int32_t decode_one_chunked();
 public:
 	bool send_GET_request(string msg);
 	bool send_POST_request(string msg);
-
-	bool get_received_msg(string& msg);
+	bool get_received_msg(int msg_size,char* payload);
 	
 
 };
