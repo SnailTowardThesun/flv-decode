@@ -6,7 +6,6 @@
 #define FLV_DECODE_FLVCOMMONHEADERFILE_H
 
 #include "FlvKernel.h"
-#include <stdint-gcc.h>
 #include <iostream>
 #include <string>
 #include <vector>
