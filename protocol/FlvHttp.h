@@ -13,6 +13,11 @@ using namespace std;
 
 class FlvHttp
 {
+	enum _enDataCoeded
+	{
+		CHUNKED = 0,
+		GZIP,
+	};
 public:
 	FlvHttp();
 	virtual ~FlvHttp();
@@ -25,11 +30,13 @@ private:
 	char* recved_buffer_;
 	char* decoded_current_pos_;
 
-	int32_t data_left_;
+	int32_t data_left_,data_total_;
+	int32_t previous_chunked_data_size_;
+	_enDataCoeded  data_coded_type_;
 protected:
-	char* parse_received_msg(char* msg_to_parse, int32_t& msg_size);
 	int32_t parse_url(string url_to_parse, string& targetAddr, string& targetPort, string& requestContent);
-	int32_t decode_one_chunked();
+	int32_t decode_one_chunked(int size);
+
 public:
 	bool send_GET_request(string msg);
 	bool send_POST_request(string msg);

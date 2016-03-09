@@ -4,6 +4,7 @@
 
 #include "FlvDecode.h"
 #include "protocol/FlvHttp.h"
+#include "protocol/FlvHttp2.h"
 FlvDecode::FlvDecode():read_buffer_(nullptr)
 {
 	read_buffer_ = new char[MAX_SIZE_OF_BUFFER_READ_FROM_FILE];
@@ -58,17 +59,17 @@ void FlvDecode::decode_flv_from_http(std::string url)
 {
 	// decode the http flv stream;
 	if(url.empty()) return;
-	FlvHttp http_decode;
+	FlvHttp2 http_decode;
 	http_decode.initialize("192.168.9.237",8080);
 
 	// send get message 
 	//http_decode.send_GET_request("live/livestream.flv");
 	http_decode.send_GET_request("/live/livestream.flv");
-	char* recv_message = new char[100];
+	char* recv_message = new char[1024*1024];
 	int32_t recv_message_size = 9;
 	// get flv header
 	http_decode.get_received_msg(recv_message_size,recv_message);
-	flv_header_.decode_flv_header(recv_message, 9);
+	if(!flv_header_.decode_flv_header(recv_message, 9)) return;
 	// loop to get message and parse
 	//
 	int payload_size_read = 0;
@@ -77,11 +78,15 @@ void FlvDecode::decode_flv_from_http(std::string url)
 
 		http_decode.get_received_msg(15,recv_message);
 		FlvPackage* ppack = new FlvPackage();
+		std::cout<<endl;
 		bool ret = ppack->decode_one_flv_package(recv_message,DEFAULT_FLV_PACKAGE_SIZE,DOING_NOTHING);
 		if(!ret)
 		{
 			delete ppack;
+			break;
 		}
 		payload_size_read = (int)ppack->get_payload_size();
-	}while(recv_message != nullptr);
+	}while(http_decode.get_received_msg(payload_size_read,recv_message));
+	
+	delete[] recv_message;
 }
