@@ -46,7 +46,7 @@ FlvFileType FlvHeader::get_file_type()
 
 bool FlvHeader::decode_flv_header(const char* header, int header_size)
 {
-	if(header_size < 9) 
+	if(header_size < 5) 
 	{
 		std::cout<<"the header's size is too small"<<std::endl;
 		return false;
