@@ -3,11 +3,13 @@
 //
 
 #include "FlvHttp.h"
+#include <string.h>
 
 FlvHttp::FlvHttp():decoded_buffer_(nullptr),
 	recved_buffer_(nullptr),
-	decoded_current_pos_(MAX_LENGTH_OF_RECEIVE_MESSAGE),
-	data_left_(0)
+	decoded_current_pos_(nullptr),
+	data_left_(0),
+	data_coded_type_(CHUNKED)
 {
 	decoded_buffer_ = new char[MAX_LENGTH_OF_RECEIVE_MESSAGE];
 }
@@ -74,7 +76,22 @@ bool FlvHttp::send_GET_request(string msg)
 		cout<<"fail to send the request message"<<endl;
 		return false;
 	}
-	return true;
+
+	// we should get response message here 
+	// set the type of data(chunked or gzip_)
+	int32_t data_received_size = 0;
+	char* pbuffer = recved_buffer_ = client_socket_.recv_msg(data_received_size);
+	pbuffer = strstr(recved_buffer_,"\r\n\r\n");
+	if(pbuffer != nullptr)
+	{
+		pbuffer += 2;
+		int size = (int)(data_received_size - (pbuffer - recved_buffer_));
+		recved_buffer_ = pbuffer;
+		decode_one_chunked(size);
+		return true;
+	}
+
+	return false;
 }
 
 bool FlvHttp::send_POST_request(string msg)
@@ -87,106 +104,107 @@ bool FlvHttp::send_POST_request(string msg)
 	return true;
 }
 
-char* FlvHttp::parse_received_msg(char* msg_to_parse, int32_t& msg_size)
-{
-	char* msg_result = nullptr;
-	if(msg_to_parse == nullptr)
+int32_t FlvHttp::decode_one_chunked(int size = 0)
+{	
+	// the message copy always start at the begining of decode_buffer_
+	memset(decoded_buffer_,0,MAX_LENGTH_OF_RECEIVE_MESSAGE);
+	data_left_ = 0;
+
+	int32_t data_left_to_decode = 0;
+	if(size != 0)
 	{
-		return nullptr;
+		data_left_to_decode = size;
 	}
-
-	if(msg_to_parse[0] == 'H' && msg_to_parse[1] == 'T' && msg_to_parse[2] == 'T' && msg_to_parse[3] == 'P')
+	else
 	{
-
-		msg_result = strstr(msg_to_parse, "\r\n\r\n");
-		if (msg_result != nullptr)
+		recved_buffer_ = client_socket_.recv_msg(data_left_to_decode);
+	}
+	// decode the received message into decoded_buffer_	
+	char* pdecoded = decoded_buffer_;
+	char* pChunk = recved_buffer_;
+	while(data_left_to_decode > 0)
+	{
+		if(previous_chunked_data_size_ >0)
 		{
-			msg_result += 4;;
-			msg_result = strstr(msg_result, "\r\n");
-			msg_result += 2;
-
+			int data_size_to_copy = \
+				previous_chunked_data_size_ < data_left_to_decode?previous_chunked_data_size_:data_left_to_decode;
+			
+			memcpy(pdecoded, recved_buffer_,data_size_to_copy);
+			data_left_ += data_size_to_copy;
+			
+			pdecoded += data_size_to_copy;
+			data_left_to_decode -= data_size_to_copy;
+			previous_chunked_data_size_ -= data_size_to_copy;
 		}
-	}	
-	else 
-		msg_result = msg_to_parse;
-	return msg_result;
-}
-
-
-int32_t FlvHttp::decode_one_chunked()
-{
-	if(recved_buffer_ == nullptr) 
-	{
-		recved_buffer_ = client_socket_.recv_msg(data_left_);
-		if(recved_buffer_ == nullptr) return 0;
-		decoded_current_pos_ = recved_buffer_;
-	}
-
-	int chunk_size = 0;
-	char* pchunk_size = (char*)&chunk_size;
-
-	if(decoded_current_pos_[0] == 'H' && decoded_current_pos_[1] == 'T' && decoded_current_pos_[2] == 'T' && decoded_current_pos_[3] == 'P')
-	{
-
-		decoded_current_pos_ = strstr(decoded_current_pos_, "\r\n\r\n");
-		if (decoded_current_pos_ != nullptr)
+		else	
 		{
-			decoded_current_pos_ += 2;
-		}
-	}
-	// get chunk size
-	decoded_current_pos_ = strstr(decoded_current_pos_,"\r\n");
-	if(decoded_current_pos_ != nullptr)
-	{
-		if(decoded_current_pos_ - recved_buffer_ < MAX_LENGTH_OF_RECEIVE_MESSAGE - 2)
-		{
-			decoded_current_pos_ += 2;
-			char tmp[10] = {0};
-			char* pEnd;
-			for(int i = 0; i < 10; i++)
+			pChunk = strstr(pChunk, "\r\n");
+			if(pChunk != nullptr)
 			{
-				if(decoded_current_pos_[0] == '\r') break;
-				tmp[i] = decoded_current_pos_[0];
-				decoded_current_pos_++;
+				pChunk += 2;
+				data_left_to_decode -= pChunk - recved_buffer_;
+				
+				// get chunk size
+				char tmp[10] = {0};
+				char* pEnd;
+				for(int i = 0; i < 10; i++)
+				{
+					if(pChunk[0] == '\r') break;
+					tmp[i] = pChunk[0];
+					pChunk++;
+					data_left_to_decode -= 1;
+				}
+				int chunk_size = strtol(tmp,&pEnd,16);
+				cout<<endl;
+				cout<<"chunk size is "<<chunk_size<<endl;
+				cout<<endl;
+				pChunk += 2;
+				data_left_to_decode -= 2;
+				if(data_left_to_decode < chunk_size)
+				{
+					memcpy(pdecoded+data_left_, pChunk, data_left_to_decode);
+					data_left_ += data_left_to_decode;
+					previous_chunked_data_size_ = chunk_size - data_left_to_decode;
+					data_left_to_decode = 0;
+				}
+				else
+				{
+					memcpy(pdecoded+data_left_,pChunk, chunk_size);
+					data_left_ += chunk_size;
+					data_left_to_decode -= chunk_size;
+					pChunk += chunk_size;
+				}
 			}
-			chunk_size = strtol(tmp,&pEnd,10);
-			decoded_current_pos_ = strstr(decoded_current_pos_,"\r\n");
-			decoded_current_pos_ += 2;
-			memcpy (decoded_buffer_,decoded_current_pos_,chunk_size);
-
+			else
+			{
+				break;
+			}
 		}
 	}
-	return chunk_size;
+	data_total_ = data_left_;
+	return true;
 }
 
 bool FlvHttp::get_received_msg(int msg_size,char* payload)
 {
-	// decode the chunked data and copy the data to decoded_buffer_
-
-	int temp = 0;
-	do
+	// decode the chunked data and copy the data to decoded_buffer_	
+	int tmp = 0;
+	while(msg_size > 0)
 	{
-		temp = decode_one_chunked();
-		
-		if(temp == 0)
+		if(msg_size <= data_left_)
 		{
-			cout<<"fail to decode one chunk "<<endl;
-			return false;
+			memcpy(payload + tmp,&decoded_buffer_[data_total_ - data_left_],msg_size);
+			data_left_ -= msg_size;
+			msg_size = 0;
 		}
-
-		memcpy(payload,decoded_buffer_,msg_size <= temp ? msg_size:temp);
-		msg_size -= temp;
-	}while(msg_size > 0);
-	
-	return true;
-	/*
-	char*  whole_message = nullptr;
-	whole_message = client_socket_.recv_msg(msg_size);
-	if(msg_size == 0)
-	{
-		cout<<"the http response is null"<<endl;
-		return nullptr;
+		else
+		{	
+			memcpy(payload + tmp,&decoded_buffer_[data_total_ - data_left_ ],data_left_);
+			msg_size -= data_left_;
+			tmp += data_left_;
+			decode_one_chunked();
+		}
 	}
-	return parse_received_msg(whole_message, msg_size);
-	*/
+
+	return true;	
 }
