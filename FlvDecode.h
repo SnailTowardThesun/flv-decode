@@ -22,8 +22,11 @@ private:
 	FlvHeader flv_header_;
 	// lots of packages
 	std::vector<FlvPackage*> flv_package_list_;
+protected:
+	bool parser_url(std::string url,std::string& ip,int& port,std::string& msg);
 public:
     void decode_flv_file(std::string filename);
+	void decode_flv_from_http(std::string url);
 };
 
 
