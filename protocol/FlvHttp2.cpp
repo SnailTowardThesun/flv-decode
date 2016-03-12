@@ -7,8 +7,8 @@
 
 FlvHttp2::FlvHttp2():socket_(-1),
 	socket_time_out_(2000),
-	chunk_size_left_(0),
-	message_(nullptr)
+	message_(nullptr),
+	chunk_size_left_(0)
 {
 	message_ = new char[MAX_LENGTH_OF_RECEIVE_MESSAGE];
 	memset(message_,0,MAX_LENGTH_OF_RECEIVE_MESSAGE);
