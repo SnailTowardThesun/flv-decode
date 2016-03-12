@@ -122,3 +122,7 @@ int32_t FlvLog::log(const char* level_name, const char* tag, const char* fmt,...
 	return 0;
 }
 
+void FlvLog::trace(std::string level_name, std::string tag, std::string msg)
+{
+	std::cout<<"["<<level_name<<"]["<<tag<<"]"<<msg<<std::endl;
+}

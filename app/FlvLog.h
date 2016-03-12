@@ -32,6 +32,7 @@ protected:
 public:
 	void set_log_file(const std::string logFile);
 	int32_t log(const char* level_name, const char* tag, const char* fmt,...);
+	void trace(std::string level_name, std::string tag, std::string msg);
 
 };
 

@@ -12,5 +12,5 @@
 #include <fstream>
 
 #include <string.h>
-
+#include "../app/FlvLog.h"
 #endif //FLV_DECODE_FLVCOMMONHEADERFILE_H
