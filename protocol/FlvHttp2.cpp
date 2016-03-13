@@ -28,7 +28,7 @@ bool FlvHttp2::initialize(string url, int port)
 	
 	if(socket_ == -1) 
 	{
-		std::cout<<"fail to create local socket"<<std::endl;
+		FlvLog::getInstance()->trace("error","flvhttp2.cpp","fail to create local socket");
 		return false;
 	}
 
@@ -41,18 +41,18 @@ bool FlvHttp2::initialize(string url, int port)
 	// connect to server
 	if (connect(socket_,(const sockaddr*)&socket_addr_,sizeof(socket_addr_)) != 0)
 	{
-		std::cout<<"fail to connect to the server"<<std::endl;
+		FlvLog::getInstance()->trace("error","flvhttp2.cpp","fail to connect to the server");
 		return false;
 	}
 
 	host_ip_ = url;
 	host_port_ = to_string(port);
 
-	std::cout<<"success to create socket and connect to server"<<std::endl;
+	FlvLog::getInstance()->trace("error","flvhttp2.cpp","success to create socket and connect to server");
 	file_p_ = fdopen(socket_,"rw+");
 	if( file_p_ == nullptr)
 	{
-		cout<<"fail to create the file"<<endl;
+		FlvLog::getInstance()->trace("error","flvhttp2.cpp","fail to create the file");
 		return false;
 	}
 	return true;
@@ -62,7 +62,7 @@ bool FlvHttp2::send_GET_request(string msg)
 {
 	if(msg.empty())
 	{
-		cout<<"the GET request's message is empty"<<endl;
+		FlvLog::getInstance()->trace("error","flvhtt2.cpp","the GET request's message is empty");
 		return false;
 	}
 	if(file_p_ == nullptr) return false;

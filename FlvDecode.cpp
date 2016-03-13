@@ -49,14 +49,16 @@ bool FlvDecode::parser_url(std::string url, std::string& ip, int& port, std::str
 		FlvLog::getInstance()->trace("error","flvdecode.cpp","the url to be parsed is empty");
 		return false;
 	}
-	//get protocol
-	
+	size_t pos1 = url.find(":",7);
 	//get ip
-	
+	ip.assign(url.begin() + 7, url.begin()+pos1);
 	//get port
-	
+	size_t pos2 = url.find("/",pos1);
+	std::string port_s;
+	port_s.assign(url.begin() + pos1 + 1,url.begin() + pos2);
+	port = atoi(port_s.c_str());
 	//the last is msg to request
-	
+	msg.assign(url.begin() + pos2,url.end());
 	return true;
 }
 
@@ -66,11 +68,12 @@ void FlvDecode::decode_flv_from_http(std::string url)
 	if(url.empty()) return;
 	FlvHttp2 http_decode;
 	std::string ip,msg;
-	int port = 80;
-	http_decode.initialize("192.168.1.237",8080);
+	int port = 8080;
+	if(!parser_url(url,ip,port,msg)) return;
+	http_decode.initialize(ip,port);
 	// send get message 
 	//http_decode.send_GET_request("live/livestream.flv");
-	http_decode.send_GET_request("/live/livestream.flv");
+	http_decode.send_GET_request(msg);
 	char* recv_message = new char[1024*1024];
 	int32_t recv_message_size = 9;
 	// get flv header
