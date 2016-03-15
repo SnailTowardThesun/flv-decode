@@ -13,6 +13,7 @@ FlvDecode::FlvDecode():read_buffer_(nullptr)
 FlvDecode::~FlvDecode()
 {
 	if(read_buffer_ != nullptr) delete[] read_buffer_;
+	if(!flv_package_list_.empty()) flv_package_list_.clear();
 }
 
 void FlvDecode::decode_flv_file(std::string filename)
@@ -36,8 +37,8 @@ void FlvDecode::decode_flv_file(std::string filename)
 		if(!(ret = ppack->decode_one_flv_package(read_buffer_,DEFAULT_FLV_PACKAGE_SIZE,DOING_NOTHING))) break;	
 		payload_size_read = (int)ppack->get_payload_size();
 		file_stream.seekg(payload_size_read,file_stream.cur);
-		flv_package_list_.push_back(ppack);
 	}
+	delete ppack;
 	// close the stream
 	file_stream.close();
 }

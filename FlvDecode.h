@@ -8,7 +8,7 @@
 #include "./protocol/FlvHeader.h"
 #include "./protocol/FlvPackage.h"
 
-static const int32_t MAX_SIZE_OF_BUFFER_READ_FROM_FILE = 4096;
+static const long MAX_SIZE_OF_BUFFER_READ_FROM_FILE = 4096;
 
 class FlvDecode
 {

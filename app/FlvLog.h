@@ -7,7 +7,7 @@
 
 #include "../kernel/FlvCommonHeaderFile.h"
 
-static const int32_t LOG_MAX_SIZE = 4096;
+static const long LOG_MAX_SIZE = 4096;
 static const char* DEFAULT_LOG_FILE = "flv-decode.log";
 
 class FlvLog 

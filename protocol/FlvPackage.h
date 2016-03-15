@@ -7,7 +7,7 @@
 
 #include "../kernel/FlvCommonHeaderFile.h"
 
-static const int32_t DEFAULT_FLV_PACKAGE_SIZE = 15;
+static const long DEFAULT_FLV_PACKAGE_SIZE = 15;
 typedef enum _enFlvPacketPayloadOperation
 {
 	DOING_NOTHING = 0,
@@ -20,11 +20,11 @@ public:
 	FlvPackage();
 	virtual ~FlvPackage();
 private:
-	uint32_t previous_packet_size_;
-	uint8_t packet_type_;
+	unsigned int previous_packet_size_;
+	unsigned char packet_type_;
 	char payload_size_[3];
 	char time_stamp_lower_[3];
-	uint8_t time_stamp_upper_;
+	unsigned char time_stamp_upper_;
 	char stream_id_[3];
 	char* payload_data_;
 public:

@@ -24,30 +24,25 @@ FlvHttp2::~FlvHttp2()
 bool FlvHttp2::initialize(string url, int port)
 {
 	if(url.empty() || port < 1) return false;
-	socket_ = socket(AF_INET,SOCK_STREAM,0);
-	
+
+	socket_ = socket(AF_INET,SOCK_STREAM,0);	
 	if(socket_ == -1) 
 	{
 		FlvLog::getInstance()->trace("error","flvhttp2.cpp","fail to create local socket");
 		return false;
 	}
-
 	socket_addr_.sin_family = AF_INET;
 	socket_addr_.sin_port = htons(port);
 	socket_addr_.sin_addr.s_addr = inet_addr(url.c_str());
-
 	setsockopt(socket_,SOL_SOCKET,SO_RCVTIMEO,(char*)&socket_time_out_,sizeof(int32_t));
-
 	// connect to server
 	if (connect(socket_,(const sockaddr*)&socket_addr_,sizeof(socket_addr_)) != 0)
 	{
 		FlvLog::getInstance()->trace("error","flvhttp2.cpp","fail to connect to the server");
 		return false;
 	}
-
 	host_ip_ = url;
 	host_port_ = to_string(port);
-
 	FlvLog::getInstance()->trace("error","flvhttp2.cpp","success to create socket and connect to server");
 	file_p_ = fdopen(socket_,"rw+");
 	if( file_p_ == nullptr)
@@ -66,7 +61,6 @@ bool FlvHttp2::send_GET_request(string msg)
 		return false;
 	}
 	if(file_p_ == nullptr) return false;
-
 	string request = "GET " + msg + " HTTP/1.1\r\n";
 	request += "Host: " + host_ip_ + ":" + host_port_ +"\r\n\r\n";
 	fwrite(request.c_str(),1,request.size(),file_p_);
@@ -88,6 +82,7 @@ int FlvHttp2::get_chunk_size()
 	int ret = 0;
 	char tmp[10] = {0};
 	char* pEnd;
+	string show_msg;
 	if (fgets(message_,32,file_p_) == nullptr)
 	{
 		if(feof(file_p_))
@@ -103,14 +98,14 @@ int FlvHttp2::get_chunk_size()
 		tmp[i] = message_[i];
 	}
 	ret = strtol(tmp,&pEnd,16);
-	cout<<"chunk's size is "<<ret<<endl;
+	show_msg = "chunk's size is " + to_string(ret);
+	FlvLog::getInstance()->trace("trace","flvhttp2.cpp",show_msg);
 	return ret;
 }
 
 bool FlvHttp2::get_received_msg(int message_size, char* message)
 {
 	if(message_size < 1 || message == nullptr || file_p_ == nullptr) return false;
-	cout<<"the chunk_size_left is "<<chunk_size_left_<<endl;
 	int msg_required = message_size;
 	while(msg_required > 0)
 	{
@@ -124,19 +119,16 @@ bool FlvHttp2::get_received_msg(int message_size, char* message)
 		}
 		if(msg_required < chunk_size_left_)
 		{
-			cout<<"get message! the size of msg_required is "<<msg_required<<endl;
 			fread(message+ (message_size - msg_required),1,msg_required,file_p_);
 			chunk_size_left_ -= msg_required;
 			msg_required = 0;
 		}
 		else
 		{
-			cout<<"get message! the size of chunk_size_left is "<<chunk_size_left_<<endl;
 			fread(message + (message_size - msg_required),1,chunk_size_left_,file_p_);
 			msg_required -= chunk_size_left_;
 			chunk_size_left_ = 0;
 		}
-	}
-	
+	}	
 	return true;
 }

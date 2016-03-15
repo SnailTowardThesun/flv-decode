@@ -106,5 +106,5 @@ int32_t FlvUDPSocket::send_msg(std::string msg, int32_t msg_size)
 
 char* FlvUDPSocket::recv_msg(int32_t& msg_szie)
 {
-
+	return nullptr;
 }
