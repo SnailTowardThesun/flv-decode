@@ -13,27 +13,24 @@ static const char* DEFAULT_LOG_FILE = "flv-decode.log";
 class FlvLog 
 {
 public:
-	FlvLog();
-	virtual ~FlvLog();
-
-	// static part
+    FlvLog();
+    virtual ~FlvLog();
+    // static part
 private:
-	static FlvLog* instance_;
+    static FlvLog* instance_;
 public:
-	static FlvLog* getInstance();
-	static void releaseInstance();
-	//
+    static FlvLog* getInstance();
+    static void releaseInstance();
 private:
-	std::string file_name_;
-	char* log_data_;
-	int flog_file_;
+    std::string file_name_;
+    char* log_data_;
+    int flog_file_;
 protected:
-	bool generate_header(const char* tag, int context_id,const char* level_name, int& header_size);
+    bool generate_header(const char* tag, int context_id,const char* level_name, int& header_size);
 public:
-	void set_log_file(const std::string logFile);
-	int32_t log(const char* level_name, const char* tag, const char* fmt,...);
-	void trace(std::string level_name, std::string tag, std::string msg);
-
+    void set_log_file(const std::string logFile);
+    int32_t log(const char* level_name, const char* tag, const char* fmt,...);
+    void trace(std::string level_name, std::string tag, std::string msg);
 };
 
 

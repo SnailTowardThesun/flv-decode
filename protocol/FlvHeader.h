@@ -29,9 +29,8 @@ private:
 public:
     void set_file_type(FlvFileType type);
     FlvFileType get_file_type();
-	bool decode_flv_header(const char* header, int header_size);
-
-	static long  get_default_header_size(){return 9;}
+    bool decode_flv_header(const char* header, int header_size);
+    static long  get_default_header_size(){return 9;}
 };
 
 #endif //FLV_DECODE_FLVHEADER_H
