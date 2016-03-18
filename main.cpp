@@ -1,5 +1,5 @@
 #include "kernel/FlvKernel.h"
-#include "FlvDecode.h"
+#include "FlvDecoder.h"
 
 typedef enum _enInputType
 {

@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <csignal>
-
+static const int  MAX_LENGTH_OF_RECEIVE_MESSAGE = 4096;
 using namespace std;
 
 class FlvHttp2

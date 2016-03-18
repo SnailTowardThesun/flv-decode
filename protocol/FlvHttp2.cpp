@@ -3,7 +3,6 @@
 //
 #include "FlvHttp2.h"
 #include <stdio.h>
-#include "../app/FlvSocket.h"
 
 FlvHttp2::FlvHttp2():socket_(-1),
     socket_time_out_(2000),

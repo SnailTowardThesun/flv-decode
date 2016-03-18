@@ -15,7 +15,7 @@ set(KERNEL_FUNCTION kernel/FlvKernel.h kernel/FlvCommonHeaderFile.h)
 
 set(PROTOCOL_FUNCTION  protocol/FlvHeader.cpp protocol/FlvHeader.h protocol/FlvPackage.cpp protocol/FlvPackage.h protocol/FlvHttp2.h protocol/FlvHttp2.cpp)
 
-set(SOURCE_FILES main.cpp  FlvDecode.cpp FlvDecode.h ${APP_FUNCTION} ${KERNEL_FUNCTION} ${PROTOCOL_FUNCTION})
+set(SOURCE_FILES main.cpp  FlvDecoder.cpp FlvDecoder.h ${APP_FUNCTION} ${KERNEL_FUNCTION} ${PROTOCOL_FUNCTION})
 
 set(FLV_BINARY_DIR "./objs/")
 set(EXECUTABLE_OUTPUT_PATH ${FLV_BINARY_DIR})

@@ -46,10 +46,10 @@ bool FlvLog::generate_header(const char* tag, int context_id, const char* level_
 {
 
     // clock time
-    // timeval tv;
+    timeval tv;
     if (gettimeofday(&tv, NULL) == -1) 
     {
-        eturn false;
+        return false;
     }
     // to calendar time
     struct tm* tm;
